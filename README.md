@@ -28,7 +28,8 @@ You can customize `coder.nvim` in your `init.lua` file as follows:
 
 ```lua
 require('coder').setup({
-    -- Add configuration options here
+    key = "GROQ_KEY",
+    model = "GROQ_MODEL"
 })
 ```
 
