@@ -4,14 +4,13 @@
 
 ## Features
 
-- **Code Completion**: Leverages a model-based completion system to suggest code snippets and help complete lines or blocks of code.
-- **Chat Interface**: Offers a chat-like interactive assistant to help with coding queries or contextual advice.
-- **Context Management**: Analyzes and retains code context to provide relevant suggestions and responses.
-- **Custom Prompts**: Allows users to create and manage custom prompts for enhanced flexibility in responses and completions.
+- **Code Completion**: Leverages a model-based completion system to suggest code snippets and complete lines or blocks of code.
+- **Chat Interface**: Offers an interactive assistant for coding queries or contextual advice.
+- **Context Management**: Analyzes and retains code context from selected files to improve the relevance of suggestions and responses.
 
 ## Installation
 
-Use your favorite plugin manager to install `coder.nvim`. For example, with [packer.nvim](https://github.com/wbthomason/packer.nvim):
+Install `coder.nvim` using your preferred plugin manager. For example, with [packer.nvim](https://github.com/wbthomason/packer.nvim):
 
 ```lua
 use 'guerrerojuli/coder.nvim'
@@ -19,12 +18,9 @@ use 'guerrerojuli/coder.nvim'
 
 ## Usage
 
-1. **Code Completion**: Invoke the completion function to generate code suggestions based on context.
-2. **Chat Assistance**: Start a chat session to receive coding help or general assistance.
+### Setup
 
-## Configuration
-
-You can customize `coder.nvim` in your `init.lua` file as follows:
+Configure `coder.nvim` in your `init.lua` file as follows:
 
 ```lua
 require('coder').setup({
@@ -33,19 +29,42 @@ require('coder').setup({
 })
 ```
 
+### Commands
+
+- **`CoderAddContext file1 file2 ...`**  
+  Adds specified files to the model context. This enables the assistant to refer to these files when providing completions or answering questions.
+
+- **`CoderRmContext file1 file2 ...`**  
+  Removes specified files from the model context, reducing the assistant's focus to the remaining files.
+
+- **`CoderAsk "question"`**  
+  Allows you to ask a general coding question, leveraging any provided context.
+
+- **`n,m CoderAskCode "question"`**  
+  Ask a question specific to a code segment, selecting the line range (`n, m`) to limit the assistant’s focus.
+
+- **`n,m CoderReplace "question"`**  
+  Replaces code within lines `n` to `m` with model-generated code based on the provided context.
+
+- **`CoderComplete "question"`**  
+  Completes the current code based on context, useful for finishing functions or filling in boilerplate code.
+
+### Example Workflow
+
+1. Add context files using `CoderAddContext`.
+2. Ask coding-related questions with `CoderAsk` or `CoderAskCode`.
+3. Use `CoderComplete` or `CoderReplace` for inline assistance or code replacement.
+
 ## File Overview
 
-- **coder.lua**: Main file that initializes the plugin and sets up the core functionality.
-- **completion.lua**: Contains functions related to code completion.
-- **chat.lua**: Manages the interactive chat interface.
-- **prompts.lua**: Handles prompt management for varied responses.
-- **context.lua**: Deals with context management, allowing the plugin to understand and use relevant coding context.
-- **utils.lua**: Contains helper functions used throughout the plugin.
+- **coder.lua**: Initializes the plugin, defining commands and managing core functionality.
+- **completion.lua**: Contains code completion functions.
+- **chat.lua**: Handles chat interactions and query processing.
+- **model.lua**: Manages model configurations and API requests.
+- **context.lua**: Manages file context for relevant suggestions.
+- **prompts.lua**: Custom prompts for specific responses.
+- **utils.lua**: Utility functions for Neovim buffer handling.
 
 ## Contributing
 
-Contributions are welcome! Please submit a pull request or open an issue for any bug reports or feature requests.
-
-## License
-
-This project is licensed under the MIT License.
+Feel free to contribute or open issues to help improve `coder.nvim`. Contributions are welcome!
