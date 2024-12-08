@@ -39,6 +39,7 @@ local function open_input_window()
   local width = display_config.width
   local row = display_config.row + display_config.height
   local col = display_config.col
+  local height = 5
 
   input_buf = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_buf_set_option(input_buf, "bufhidden", "wipe")
@@ -47,27 +48,27 @@ local function open_input_window()
   input_win = vim.api.nvim_open_win(input_buf, true, {
     relative = "editor",
     width = width,
-    height = 1,
+    height = height,
     row = row,
     col = col,
     style = "minimal",
     border = "rounded",
   })
 
-  -- Mapeamos <CR> para enviar el mensaje
+  -- Mapeamos <C-s> para enviar el mensaje
   vim.api.nvim_buf_set_keymap(
     input_buf,
     "i",
-    "<CR>",
+    "<C-s>",
     "<Esc>:lua require('coder.chat_window').send_message()<CR>",
     { noremap = true, silent = true }
   )
 
-  -- Mapeamos <Esc> para cerrar el chat
+  -- Mapeamos <C-c> para cerrar el chat
   vim.api.nvim_buf_set_keymap(
     input_buf,
     "i",
-    "<Esc>",
+    "<C-c>",
     "<Esc>:lua require('coder.chat_window').close_chat()<CR>",
     { noremap = true, silent = true }
   )
@@ -82,26 +83,32 @@ function M.render_conversation()
   for _, msg in ipairs(conversation) do
     local prefix = (msg.role == "user") and "User: " or "Assistant: "
     local lines = vim.split(msg.content, "\n")
+    vim.api.nvim_buf_set_lines(display_buf, -1, -1, false, { prefix })
     for _, l in ipairs(lines) do
-      vim.api.nvim_buf_set_lines(display_buf, -1, -1, false, { prefix .. l })
+      vim.api.nvim_buf_set_lines(display_buf, -1, -1, false, { l })
     end
     vim.api.nvim_buf_set_lines(display_buf, -1, -1, false, { "" })
   end
 
   vim.api.nvim_buf_set_option(display_buf, "modifiable", false)
+
+  -- Mover el cursor a la última línea para hacer scroll hacia abajo
+  local line_count = vim.api.nvim_buf_line_count(display_buf)
+  vim.api.nvim_win_set_cursor(display_win, {line_count, 0})
 end
 
 function M.send_message()
-  local line = vim.api.nvim_buf_get_lines(input_buf, 0, 1, false)[1]
-  line = line or ""
-  if line == "" then
+  local lines = vim.api.nvim_buf_get_lines(input_buf, 0, 1, false)
+  local message = table.concat(lines, "\n")
+
+  if message == "" then
     return
   end
 
   vim.api.nvim_buf_set_lines(input_buf, 0, -1, false, {""})
   vim.api.nvim_command("startinsert!")
 
-  table.insert(conversation, { role = "user", content = line })
+  table.insert(conversation, { role = "user", content = message })
   M.render_conversation()
 
   model.chat(conversation, function(response_message)
@@ -117,7 +124,7 @@ function M.close_chat()
   if display_win and vim.api.nvim_win_is_valid(display_win) then
     vim.api.nvim_win_close(display_win, true)
   end
-  conversation = {} -- Opcional: limpiar la conversación al cerrar
+  conversation = {}
 end
 
 function M.start_chat()
