@@ -26,8 +26,18 @@ function M.chat(messages, process_message)
       "-H", "Content-Type: application/json",
       "-d", request_body
     },
-    on_exit = vim.schedule_wrap(function(j, _)
+    on_exit = vim.schedule_wrap(function(j, code)
+      if code ~= 0 then
+        -- Handle error
+        local error_message = "Error sending request: " .. j:stderr_result()
+        error(error_message)
+        return
+      end
+
       local response_body = vim.fn.json_decode(table.concat(j:result(), "\n"))
+      if response_body.choices == nil then
+        error("An error has ocurred")
+      end
       local response_message = response_body["choices"][1]["message"]
       process_message(response_message)
     end),
