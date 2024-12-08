@@ -1,3 +1,5 @@
+-- lua/coder/completion.lua
+
 local model = require("coder.model")
 local context = require("coder.context")
 local prompts = require("coder.prompts")

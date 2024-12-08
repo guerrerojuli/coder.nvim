@@ -1,14 +1,39 @@
+-- lua/coder/utils.lua
+
 local M = {}
 
 function M.print_in_buffer(text)
-  -- Open a new buffer
-  vim.api.nvim_command('new') -- Opens a new split window
+  -- Split the text into lines
+  local lines = vim.split(text, "\n")
 
-  -- Get the current buffer
-  local buf = vim.api.nvim_get_current_buf()
+  -- Calculate the dimensions for the floating window
+  local width = math.floor(vim.o.columns * 0.8)
+  local height = math.min(#lines + 2, math.floor(vim.o.lines * 0.8)) -- Add padding and ensure it fits
+  local row = math.floor((vim.o.lines - height) / 2)
+  local col = math.floor((vim.o.columns - width) / 2)
 
-  -- Set the content into the new buffer
-  vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(text, "\n"))
+  -- Create a new buffer
+  local buf = vim.api.nvim_create_buf(false, true) -- No file, scratch buffer
+
+  -- Set the content into the buffer
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+
+  -- Configure the floating window
+  local opts = {
+    relative = "editor",
+    width = width,
+    height = height,
+    row = row,
+    col = col,
+    style = "minimal",
+    border = "rounded", -- "single", "double", or "solid"
+  }
+
+  -- Create the floating window
+  vim.api.nvim_open_win(buf, true, opts)
+
+  -- Add keymap to close the window
+  vim.api.nvim_buf_set_keymap(buf, "n", "q", ":close<CR>", { noremap = true, silent = true })
 end
 
 

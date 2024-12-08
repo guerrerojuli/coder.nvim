@@ -1,5 +1,4 @@
 -- plugin/coder.lua
--- This file is automatically sourced on startup
 
 -- Commands
 
@@ -23,6 +22,14 @@
 
 -- Require the main module of the plugin
 local coder = require("coder")
+
+vim.api.nvim_create_user_command(
+  "CoderChat",
+  function()
+    require("coder.chat_window").start_chat()
+  end,
+  {}
+)
 
 vim.api.nvim_create_user_command(
   "CoderAsk",                 -- Command name

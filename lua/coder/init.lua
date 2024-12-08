@@ -1,4 +1,5 @@
 -- lua/coder/init.lua
+
 local model = require("coder.model")
 local context = require("coder.context")
 local chat = require("coder.chat")

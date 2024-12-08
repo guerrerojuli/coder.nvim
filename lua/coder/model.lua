@@ -1,3 +1,5 @@
+-- lua/coder/model.lua
+
 local M = {}
 
 M.GROQ_KEY = ""

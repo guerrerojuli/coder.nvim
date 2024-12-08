@@ -1,3 +1,5 @@
+-- lua/coder/chat.lua
+
 local model = require("coder.model")
 local prompts = require("coder.prompts")
 local context = require("coder.context")
